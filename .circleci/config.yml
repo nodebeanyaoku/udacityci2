@@ -19,7 +19,6 @@ commands:
             aws cloudformation delete-stack --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:5} 
 
 jobs:
-
   create_infrastructure: 
     docker:
       - image: amazon/aws-cli
