@@ -3,37 +3,57 @@ version: 2.1
 
 jobs:
 
-#create_infrastructure: 
-#      - image: amazon/aws-cli
-#    steps:
-#      - checkout
-#      - run:
-#          name: Create Cloudformation Stack
-#          command: |
-#            aws cloudformation deploy \
-#              --template-file template.yml \
-#              --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:5} \
-#              --region us-west-2
+  # create_infrastructure: 
+  #       - image: amazon/aws-cli
+  #     steps:
+  #       - checkout
+  #       - run:
+  #           name: Create Cloudformation Stack
+  #           command: |
+  #             aws cloudformation deploy \
+  #               --template-file template.yml \
+  #               --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:5} \
+  #               --region us-west-2
 
-  configure_infrastructure: 
+  # configure_infrastructure: 
+  #   docker:
+  #     - image: python:3.7-alpine3.11 
+  #   steps:
+  #     - checkout
+  #     - add_ssh_keys:
+  #           # You can get this ID in the section where you registered the SSH Key
+  #           fingerprints: ["fc:bc:8b:dc:91:0c:ed:14:ee:cf:eb:de:ae:c5:19:1b"] 
+  #     - run:
+  #         name: Install Ansible
+  #         command: |
+  #           apk add --update ansible
+  #     - run:
+  #         name: Run Playbook and Configure server
+  #         command: |
+  #           ansible-playbook -i inventory.txt main-remote.yml
+
+  # Exercise: Smoke Testing
+  smoke_test:
     docker:
-      - image: python:3.7-alpine3.11 
+      - image: alpine:latest
     steps:
-      - checkout
-      - add_ssh_keys:
-            # You can get this ID in the section where you registered the SSH Key
-            fingerprints: ["fc:bc:8b:dc:91:0c:ed:14:ee:cf:eb:de:ae:c5:19:1b"] 
+      - run: apk add --update curl
       - run:
-          name: Install Ansible
+          name: smoke test
           command: |
-            apk add --update ansible
-      - run:
-          name: Run Playbook and Configure server
-          command: |
-            ansible-playbook -i inventory.txt main-remote.yml
+            URL="https://blog.udacity.com/"
+            # Test if website exists
+            if curl -s --head ${URL} 
+            then
+              return 0
+            else
+              return 1
+            fi
+      - destroy_environment  
 workflows:
   my_workflow:
       jobs:
         # - create_infrastructure
-        - configure_infrastructure
+        # - configure_infrastructure
+        - smoke_test
         
