@@ -16,7 +16,7 @@ commands:
           # ${CIRCLE_WORKFLOW_ID} is a Built-in environment variable 
           # ${CIRCLE_WORKFLOW_ID:0:5} takes the first 5 chars of the variable CIRCLE_CI_WORKFLOW_ID 
           command: |
-            aws cloudformation delete-stack --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:7} 
+            aws cloudformation delete-stack --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:5} 
 
 jobs:
 
@@ -27,10 +27,11 @@ jobs:
       - checkout
       - run:
           name: Create Cloudformation Stack
+          when: on_fail 
           command: |
             aws cloudformation deploy \
               --template-file template.yml \
-              --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:7} \
+              --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:5} \
               --region us-west-2
 
   # create_infrastructure: 
@@ -90,7 +91,7 @@ jobs:
           # Fail the job intentionally to simulate an error.
           command:  return 1
       - destroy_environment
-        when: on_fail 
+        
 
 workflows:
   my_workflow:
